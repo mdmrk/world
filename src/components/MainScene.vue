@@ -5,10 +5,11 @@ import * as THREE from "three"
 import { onMounted, shallowRef } from "vue"
 
 const raycaster = new THREE.Raycaster()
-const world = shallowRef<THREE.Object3D>(new THREE.Object3D())
+const world = shallowRef(new THREE.Object3D())
 const camera = shallowRef(
   new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
 )
+let showWorld = true
 
 async function loadModel() {
   await new Promise((res) => setTimeout(res, 1000))
@@ -38,7 +39,7 @@ onMounted(() => {
     <TresPerspectiveCamera ref="camera" :position="[11, 11, 11]" />
     <OrbitControls :enablePan="false" />
     <Suspense>
-      <primitive @click="handleClick" :scale="0.05" :object="world" />
+      <primitive :visible="showWorld" @click="handleClick" :scale="0.05" :object="world" />
     </Suspense>
     <Stars :radius="100" :depth="50" :count="5000" :size="0.3" :size-attenuation="true" />
     <Icosahedron :args="[4.98, 5]" :position="[0, 0, 0]" />
