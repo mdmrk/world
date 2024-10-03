@@ -5,21 +5,23 @@ import * as THREE from "three"
 import { onMounted, shallowRef } from "vue"
 
 const raycaster = new THREE.Raycaster()
-const world = shallowRef({})
-const camera = shallowRef({})
+const world = shallowRef<THREE.Object3D>(new THREE.Object3D())
+const camera = shallowRef(
+  new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
+)
 
 async function loadModel() {
   await new Promise((res) => setTimeout(res, 1000))
 
-  const loadedModel = await useFBX("/earth.fbx")
+  const loadedModel = await useFBX("/world/earth.fbx")
   world.value = loadedModel
 }
 
-function handleClick(event: Event) {
-  const mouse = {
-    x: (event.clientX / window.innerWidth) * 2 - 1,
-    y: -(event.clientY / window.innerHeight) * 2 + 1
-  }
+function handleClick(event: MouseEvent) {
+  const mouse = new THREE.Vector2(
+    (event.clientX / window.innerWidth) * 2 - 1,
+    -(event.clientY / window.innerHeight) * 2 + 1
+  )
   raycaster.setFromCamera(mouse, camera.value)
   const intersects = raycaster.intersectObjects(world.value.children)
   if (intersects.length === 0) return
