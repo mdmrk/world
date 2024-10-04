@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { CountryCode } from "@/types"
 import { Icosahedron, OrbitControls, Stars, useFBX } from "@tresjs/cientos"
 import { TresCanvas } from "@tresjs/core"
 import * as THREE from "three"
@@ -9,6 +10,9 @@ const world = shallowRef(new THREE.Object3D())
 const camera = shallowRef(
   new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
 )
+const emit = defineEmits<{
+  (e: "setActiveCountryCode", countryCode: CountryCode): void
+}>()
 let showWorld = true
 
 async function loadModel() {
@@ -26,7 +30,8 @@ function handleClick(event: MouseEvent) {
   raycaster.setFromCamera(mouse, camera.value)
   const intersects = raycaster.intersectObjects(world.value.children)
   if (intersects.length === 0) return
-  console.log(intersects[0].object.name)
+  const clickedCountryCode = intersects[0].object.name as CountryCode
+  emit("setActiveCountryCode", clickedCountryCode)
 }
 
 onMounted(() => {

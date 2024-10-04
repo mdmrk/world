@@ -13,13 +13,13 @@
     "format": "prettier --write ."
   },
   "dependencies": {
-    "@tresjs/cientos": "^4.0.2",
+    "@tresjs/cientos": "^4.0.3",
     "@tresjs/core": "^4.3.0",
     "three": "^0.169.0",
-    "vue": "^3.5.10"
+    "vue": "^3.5.11"
   },
   "devDependencies": {
-    "@eslint/compat": "^1.1.1",
+    "@eslint/compat": "^1.2.0",
     "@rushstack/eslint-patch": "^1.10.4",
     "@tsconfig/node20": "^20.1.4",
     "@types/node": "^22.7.4",
@@ -30,7 +30,7 @@
     "@vue/tsconfig": "^0.5.1",
     "autoprefixer": "^10.4.20",
     "eslint": "^9.11.1",
-    "eslint-plugin-import": "^2.30.0",
+    "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-vue": "^9.28.0",
     "npm-run-all2": "^6.2.3",
     "postcss": "^8.4.47",
