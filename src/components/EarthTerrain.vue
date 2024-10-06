@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import type { CountryCode } from "@/types"
 import * as THREE from "three"
 import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader"
 import { onMounted, ref } from "vue"
@@ -29,15 +30,18 @@ function handleClick(event: MouseEvent) {
 async function loadModel() {
   loader.load(
     "/world/earth.fbx",
-    (object) => {
+    (object: THREE.Object3D) => {
       object.scale.set(0.05, 0.05, 0.05)
       props.scene.add(object)
       world.value = object
     },
-    (xhr) => {
-      console.log(Math.round((xhr.loaded / xhr.total) * 100) + "% loaded")
+    (event: ProgressEvent) => {
+      if (event.lengthComputable) {
+        const percentComplete = Math.round((event.loaded / event.total) * 100)
+        console.log(percentComplete + "% loaded")
+      }
     },
-    (error) => {
+    (error: unknown) => {
       console.error(error)
     }
   )
