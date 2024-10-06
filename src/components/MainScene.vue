@@ -1,58 +1,54 @@
 <script setup lang="ts">
-import Ocean from "@/components/Ocean.vue"
-import Stats from "@/components/Stats.vue"
-import type { CountryCode } from "@/types"
-import { OrbitControls, Stars, useFBX } from "@tresjs/cientos"
-import { TresCanvas } from "@tresjs/core"
+import EarthTerrain from "@/components/EarthTerrain.vue"
+import Stats from "stats.js"
 import * as THREE from "three"
-import { onMounted, shallowRef } from "vue"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js"
+import { onMounted, onUnmounted, ref } from "vue"
 
-const isDev = import.meta.env.DEV
-const raycaster = new THREE.Raycaster()
-const world = shallowRef(new THREE.Object3D())
-const camera = shallowRef(
-  new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
-)
-const emit = defineEmits<{
-  (e: "setActiveCountryCode", countryCode: CountryCode): void
-}>()
-let showWorld = true
+const container = ref()
+const scene = new THREE.Scene()
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
+const renderer = new THREE.WebGLRenderer()
+renderer.setSize(window.innerWidth, window.innerHeight)
+const controls = new OrbitControls(camera, renderer.domElement)
+const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8)
+directionalLight.position.set(5, 10, 7)
+scene.add(directionalLight)
 
-async function loadModel() {
-  await new Promise((res) => setTimeout(res, 1000))
+var stats = new Stats()
+stats.showPanel(0)
+document.body.appendChild(stats.dom)
 
-  const loadedModel = await useFBX("/world/earth.fbx")
-  world.value = loadedModel
+camera.position.set(11, 11, 11)
+camera.lookAt(0, 0, 0)
+
+function onWindowResize() {
+  camera.aspect = window.innerWidth / window.innerHeight
+  camera.updateProjectionMatrix()
+  renderer.setSize(window.innerWidth, window.innerHeight)
 }
 
-function handleClick(event: MouseEvent) {
-  const mouse = new THREE.Vector2(
-    (event.clientX / window.innerWidth) * 2 - 1,
-    -(event.clientY / window.innerHeight) * 2 + 1
-  )
-  raycaster.setFromCamera(mouse, camera.value)
-  const intersects = raycaster.intersectObjects(world.value.children)
-  if (intersects.length === 0) return
-  const clickedCountryCode = intersects[0].object.name as CountryCode
-  emit("setActiveCountryCode", clickedCountryCode)
+function animate() {
+  requestAnimationFrame(animate)
+  stats.begin()
+  controls.update()
+  renderer.render(scene, camera)
+  stats.end()
 }
 
 onMounted(() => {
-  loadModel()
+  container.value.appendChild(renderer.domElement)
+  window.addEventListener("resize", onWindowResize)
+  animate()
+})
+
+onUnmounted(() => {
+  window.removeEventListener("resize", onWindowResize)
 })
 </script>
 
 <template>
-  <Stats v-if="isDev" />
-  <TresCanvas clear-color="#181818" window-size>
-    <TresPerspectiveCamera ref="camera" :position="[11, 11, 11]" />
-    <OrbitControls :enablePan="false" />
-    <Suspense>
-      <primitive :visible="showWorld" @click="handleClick" :scale="0.05" :object="world" />
-    </Suspense>
-    <Ocean />
-    <Stars :radius="100" :depth="50" :count="5000" :size="0.3" :size-attenuation="true" />
-    <TresDirectionalLight :intensity="2" :position="[3, 3, 3]" />
-    <TresAmbientLight />
-  </TresCanvas>
+  <div class="w-full min-h-svh" ref="container">
+    <EarthTerrain :scene="scene" :camera="camera" />
+  </div>
 </template>
