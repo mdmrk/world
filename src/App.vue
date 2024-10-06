@@ -4,7 +4,7 @@ import UIHandler from "@/components/UIHandler.vue"
 import type { CountryCode } from "@/types"
 import { ref } from "vue"
 
-const activeCountryCode = ref<CountryCode | "">("")
+const activeCountryCode = ref<CountryCode | undefined>(undefined)
 
 function setActiveCountryCode(countryCode: CountryCode) {
   activeCountryCode.value = countryCode

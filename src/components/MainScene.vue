@@ -1,10 +1,13 @@
 <script setup lang="ts">
+import Ocean from "@/components/Ocean.vue"
+import Stats from "@/components/Stats.vue"
 import type { CountryCode } from "@/types"
-import { Icosahedron, OrbitControls, Stars, useFBX } from "@tresjs/cientos"
+import { OrbitControls, Stars, useFBX } from "@tresjs/cientos"
 import { TresCanvas } from "@tresjs/core"
 import * as THREE from "three"
 import { onMounted, shallowRef } from "vue"
 
+const isDev = import.meta.env.DEV
 const raycaster = new THREE.Raycaster()
 const world = shallowRef(new THREE.Object3D())
 const camera = shallowRef(
@@ -40,14 +43,15 @@ onMounted(() => {
 </script>
 
 <template>
+  <Stats v-if="isDev" />
   <TresCanvas clear-color="#181818" window-size>
     <TresPerspectiveCamera ref="camera" :position="[11, 11, 11]" />
     <OrbitControls :enablePan="false" />
     <Suspense>
       <primitive :visible="showWorld" @click="handleClick" :scale="0.05" :object="world" />
     </Suspense>
+    <Ocean />
     <Stars :radius="100" :depth="50" :count="5000" :size="0.3" :size-attenuation="true" />
-    <Icosahedron :args="[4.98, 5]" :position="[0, 0, 0]" />
     <TresDirectionalLight :intensity="2" :position="[3, 3, 3]" />
     <TresAmbientLight />
   </TresCanvas>
