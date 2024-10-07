@@ -6,21 +6,23 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js"
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js"
 import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js"
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js"
+import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js"
+import { FXAAShader } from "three/examples/jsm/shaders/FXAAShader.js"
 import { onMounted, onUnmounted, ref } from "vue"
 
 const container = ref()
 const scene = new THREE.Scene()
 const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000)
-const renderer = new THREE.WebGLRenderer({
-  antialias: true,
-  alpha: true
-})
+const renderer = new THREE.WebGLRenderer()
 renderer.setAnimationLoop(animate)
 renderer.setSize(window.innerWidth, window.innerHeight)
 const composer = new EffectComposer(renderer)
 composer.setSize(window.innerWidth, window.innerHeight)
 const renderPass = new RenderPass(scene, camera)
 composer.addPass(renderPass)
+const effectFXAA = new ShaderPass(FXAAShader)
+effectFXAA.uniforms.resolution.value.set(1 / window.innerWidth, 1 / window.innerHeight)
+composer.addPass(effectFXAA)
 const outputPass = new OutputPass()
 composer.addPass(outputPass)
 const controls = new OrbitControls(camera, renderer.domElement)
@@ -45,6 +47,7 @@ function onWindowResize() {
   camera.updateProjectionMatrix()
   renderer.setSize(width, height)
   composer.setSize(width, height)
+  effectFXAA.uniforms.resolution.value.set(1 / width, 1 / height)
 }
 
 function animate() {

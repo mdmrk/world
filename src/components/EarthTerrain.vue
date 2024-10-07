@@ -17,11 +17,19 @@ const world = ref<THREE.Object3D>()
 const raycaster = new THREE.Raycaster()
 const emit = defineEmits(["setActiveCountryCode"])
 const hoveredCountries = shallowRef<THREE.Object3D[]>([])
+const outlineColor = "#FFFFFF"
 let outlinePass = new OutlinePass(
   new THREE.Vector2(window.innerWidth, window.innerHeight),
   scene,
   camera
 )
+outlinePass.visibleEdgeColor.set(outlineColor)
+outlinePass.hiddenEdgeColor.set(outlineColor)
+outlinePass.edgeStrength = 10
+outlinePass.edgeThickness = 0.2
+outlinePass.renderToScreen = true
+outlinePass.edgeGlow = 0
+outlinePass.pulsePeriod = 0
 composer.addPass(outlinePass)
 
 function handleHover(event: MouseEvent) {
