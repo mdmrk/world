@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import EarthTerrain from "@/components/EarthTerrain.vue"
+import type { CountryCode } from "@/types"
 import Stats from "stats.js"
 import * as THREE from "three"
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js"
@@ -10,6 +11,9 @@ import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js"
 import { FXAAShader } from "three/examples/jsm/shaders/FXAAShader.js"
 import { onMounted, onUnmounted, ref } from "vue"
 
+const emit = defineEmits<{
+  (e: "setActiveCountryCode", countryCode: CountryCode | undefined): void
+}>()
 const container = ref()
 const scene = new THREE.Scene()
 const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000)
@@ -39,6 +43,10 @@ document.body.appendChild(stats.dom)
 
 camera.position.set(11, 11, 11)
 camera.lookAt(0, 0, 0)
+
+function setActiveCountryCode(countryCode: CountryCode | undefined) {
+  emit("setActiveCountryCode", countryCode)
+}
 
 function onWindowResize() {
   const width = window.innerWidth
@@ -70,6 +78,12 @@ onUnmounted(() => {
 
 <template>
   <div class="w-full h-full" ref="container">
-    <EarthTerrain :scene="scene" :camera="camera" :renderer="renderer" :composer="composer" />
+    <EarthTerrain
+      @set-active-country-code="setActiveCountryCode"
+      :scene="scene"
+      :camera="camera"
+      :renderer="renderer"
+      :composer="composer"
+    />
   </div>
 </template>

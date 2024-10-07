@@ -15,7 +15,9 @@ const { scene, camera, renderer, composer } = defineProps<{
 const loader = new FBXLoader()
 const world = ref<THREE.Object3D>()
 const raycaster = new THREE.Raycaster()
-const emit = defineEmits(["setActiveCountryCode"])
+const emit = defineEmits<{
+  (e: "setActiveCountryCode", countryCode: CountryCode | undefined): void
+}>()
 const hoveredCountries = shallowRef<THREE.Object3D[]>([])
 const outlineColor = "#FFFFFF"
 let outlinePass = new OutlinePass(
@@ -40,8 +42,9 @@ function handleHover(event: MouseEvent) {
   )
   raycaster.setFromCamera(mouse, camera)
   const intersects = raycaster.intersectObject(scene, true)
-  if (intersects.length === 0) return
-  hoveredCountries.value.push(intersects[0].object)
+  if (intersects.length !== 0) {
+    hoveredCountries.value.push(intersects[0].object)
+  }
   outlinePass.selectedObjects = hoveredCountries.value
 }
 
@@ -52,8 +55,10 @@ function handleClick(event: MouseEvent) {
   )
   raycaster.setFromCamera(mouse, camera)
   const intersects = raycaster.intersectObject(scene, true)
-  if (intersects.length === 0) return
-  const clickedCountryCode = intersects[0].object.name as CountryCode
+  let clickedCountryCode: CountryCode | undefined = undefined
+  if (intersects.length !== 0) {
+    clickedCountryCode = intersects[0].object.name as CountryCode
+  }
   emit("setActiveCountryCode", clickedCountryCode)
 }
 
@@ -80,7 +85,7 @@ async function loadModel() {
 onMounted(() => {
   loadModel()
   renderer.domElement.addEventListener("click", handleClick)
-  renderer.domElement.addEventListener("pointermove", handleHover)
+  document.addEventListener("pointermove", handleHover)
 })
 </script>
 

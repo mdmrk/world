@@ -6,7 +6,7 @@ import { ref } from "vue"
 
 const activeCountryCode = ref<CountryCode | undefined>(undefined)
 
-function setActiveCountryCode(countryCode: CountryCode) {
+function setActiveCountryCode(countryCode: CountryCode | undefined) {
   activeCountryCode.value = countryCode
 }
 </script>
