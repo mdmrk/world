@@ -16,20 +16,46 @@ async function loadPopulationData() {
   populationData = loadedPopulationData
 }
 
+function yearMarkers() {
+  const markers = []
+
+  for (let y = START_YEAR; y <= END_YEAR; y += 5) {
+    markers.push(y)
+  }
+  return markers
+}
+
 onMounted(() => {
   loadPopulationData()
 })
 </script>
 
 <template>
-  <div class="w-full absolute bottom-0 select-none">
-    <div class="flex justify-between">
-      <span>{{ START_YEAR }}</span>
-      <span>{{ year }}</span>
-      <span>{{ END_YEAR }}</span>
+  <div class="w-full h-24 absolute bottom-0 select-none pb-4 px-4 flex flex-col">
+    <div class="flex justify-between px-2 text-lg">
+      <div>
+        {{ START_YEAR }}
+      </div>
+
+      <div>
+        {{ END_YEAR }}
+      </div>
     </div>
-    <div>
-      <input type="range" :min="START_YEAR" :max="END_YEAR" v-model="year" class="w-full" />
-    </div>
+    <input
+      id="timeline"
+      type="range"
+      :min="START_YEAR"
+      :max="END_YEAR"
+      v-model="year"
+      list="markers"
+    />
+    <datalist id="markers">
+      <option
+        v-for="markerYear in yearMarkers"
+        :key="markerYear"
+        :value="markerYear"
+        :label="markerYear"
+      ></option>
+    </datalist>
   </div>
 </template>

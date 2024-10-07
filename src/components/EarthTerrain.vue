@@ -67,6 +67,7 @@ async function loadModel() {
     "/world/earth.fbx",
     (object: THREE.Object3D) => {
       object.scale.set(0.05, 0.05, 0.05)
+      object.position.set(0, 0, 0)
       scene.add(object)
       world.value = object
     },

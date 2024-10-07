@@ -7,3 +7,25 @@
 *::after {
   @apply p-0 m-0 box-border;
 }
+
+@layer components {
+  #timeline {
+    @apply w-full h-full bg-transparent appearance-none cursor-pointer border-4 border-rose-500 rounded-lg bg-gray-100 p-1;
+  }
+
+  #timeline::-webkit-slider-runnable-track {
+    @apply h-full;
+  }
+
+  #timeline::-moz-range-track {
+    @apply h-full;
+  }
+
+  #timeline::-webkit-slider-thumb {
+    @apply appearance-none w-1 h-full bg-rose-500 cursor-pointer -mt-3;
+  }
+
+  #timeline::-moz-range-thumb {
+    @apply w-1 h-full bg-rose-500 border-none cursor-pointer;
+  }
+}

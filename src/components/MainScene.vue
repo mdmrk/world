@@ -16,7 +16,10 @@ const emit = defineEmits<{
 }>()
 const container = ref()
 const scene = new THREE.Scene()
-const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000)
+const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 1000)
+camera.position.set(11, 11, 11)
+camera.lookAt(0, 0, 0)
+offsetCameraToUi()
 const renderer = new THREE.WebGLRenderer()
 renderer.setAnimationLoop(animate)
 renderer.setSize(window.innerWidth, window.innerHeight)
@@ -41,8 +44,15 @@ var stats = new Stats()
 stats.showPanel(0)
 document.body.appendChild(stats.dom)
 
-camera.position.set(11, 11, 11)
-camera.lookAt(0, 0, 0)
+function offsetCameraToUi() {
+  const width = window.innerWidth
+  const height = window.innerHeight
+  const uiHeight = 80
+  const offsetY = width > 1024 ? height * (uiHeight / height / 2) : -height / 4
+  const offsetX = width > 1024 ? width / 5 : 0
+  camera.aspect = width / height
+  camera.setViewOffset(width, height, offsetX, offsetY, width, height)
+}
 
 function setActiveCountryCode(countryCode: CountryCode | undefined) {
   emit("setActiveCountryCode", countryCode)
@@ -51,7 +61,7 @@ function setActiveCountryCode(countryCode: CountryCode | undefined) {
 function onWindowResize() {
   const width = window.innerWidth
   const height = window.innerHeight
-  camera.aspect = width / height
+  offsetCameraToUi()
   camera.updateProjectionMatrix()
   renderer.setSize(width, height)
   composer.setSize(width, height)
