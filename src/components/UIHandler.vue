@@ -5,7 +5,7 @@ import { onMounted } from "vue"
 const START_YEAR = 1950
 const END_YEAR = 2024
 const year = defineModel({ default: 2000 })
-defineProps<{
+const props = defineProps<{
   activeCountryCode: CountryCode | undefined
 }>()
 let populationData: PopulationData | undefined = undefined
@@ -31,8 +31,5 @@ onMounted(() => {
     <div>
       <input type="range" :min="START_YEAR" :max="END_YEAR" v-model="year" class="w-full" />
     </div>
-  </div>
-  <div class="h-full absolute right-0 w-96 bg-black bg-opacity-50">
-    <div></div>
   </div>
 </template>
