@@ -43,6 +43,7 @@ function setActiveCountryCode(countryCode: CountryCode | undefined) {
 function onWindowResize() {
   const width = window.innerWidth
   const height = window.innerHeight
+  camera.aspect = width / height
   camera.updateProjectionMatrix()
   renderer.setSize(width, height)
   composer.setSize(width, height)
