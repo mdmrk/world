@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import EarthOcean from "@/components/EarthOcean.vue"
 import EarthTerrain from "@/components/EarthTerrain.vue"
 import type { CountryCode } from "@/types"
 import Stats from "stats.js"
@@ -7,8 +8,6 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js"
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js"
 import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js"
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js"
-import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js"
-import { FXAAShader } from "three/examples/jsm/shaders/FXAAShader.js"
 import { onMounted, onUnmounted, ref } from "vue"
 
 const emit = defineEmits<{
@@ -23,13 +22,11 @@ offsetCameraToUi()
 const renderer = new THREE.WebGLRenderer()
 renderer.setAnimationLoop(animate)
 renderer.setSize(window.innerWidth, window.innerHeight)
+renderer.setClearColor("#181818")
 const composer = new EffectComposer(renderer)
 composer.setSize(window.innerWidth, window.innerHeight)
 const renderPass = new RenderPass(scene, camera)
 composer.addPass(renderPass)
-const effectFXAA = new ShaderPass(FXAAShader)
-effectFXAA.uniforms.resolution.value.set(1 / window.innerWidth, 1 / window.innerHeight)
-composer.addPass(effectFXAA)
 const outputPass = new OutputPass()
 composer.addPass(outputPass)
 const controls = new OrbitControls(camera, renderer.domElement)
@@ -47,9 +44,9 @@ document.body.appendChild(stats.dom)
 function offsetCameraToUi() {
   const width = window.innerWidth
   const height = window.innerHeight
-  const uiHeight = 80
-  const offsetY = width > 1024 ? height * (uiHeight / height / 2) : -height / 4
-  const offsetX = width > 1024 ? width / 5 : 0
+  const uiHeight = 96 - 28
+  const offsetY = width > 900 ? height * (uiHeight / height / 2) : -height / 4
+  const offsetX = width > 900 ? width / 8 : 0
   camera.aspect = width / height
   camera.setViewOffset(width, height, offsetX, offsetY, width, height)
 }
@@ -65,7 +62,6 @@ function onWindowResize() {
   camera.updateProjectionMatrix()
   renderer.setSize(width, height)
   composer.setSize(width, height)
-  effectFXAA.uniforms.resolution.value.set(1 / width, 1 / height)
 }
 
 function animate() {
@@ -95,5 +91,6 @@ onUnmounted(() => {
       :renderer="renderer"
       :composer="composer"
     />
+    <EarthOcean :scene="scene" />
   </div>
 </template>
