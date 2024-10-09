@@ -22,7 +22,7 @@
   }
 
   #timeline::-webkit-slider-thumb {
-    @apply appearance-none w-1 h-full bg-rose-500 cursor-pointer -mt-3;
+    @apply appearance-none w-1 h-full bg-rose-500 cursor-pointer;
   }
 
   #timeline::-moz-range-thumb {

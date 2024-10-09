@@ -2,13 +2,15 @@
 import EarthOcean from "@/components/EarthOcean.vue"
 import EarthTerrain from "@/components/EarthTerrain.vue"
 import type { CountryCode } from "@/types"
+import CameraControls from "camera-controls"
 import Stats from "stats.js"
 import * as THREE from "three"
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js"
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js"
 import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js"
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js"
-import { onMounted, onUnmounted, ref } from "vue"
+import { onMounted, onUnmounted, ref, shallowRef } from "vue"
+
+CameraControls.install({ THREE: THREE })
 
 const emit = defineEmits<{
   (e: "setActiveCountryCode", countryCode: CountryCode | undefined): void
@@ -16,11 +18,10 @@ const emit = defineEmits<{
 const container = ref()
 const scene = new THREE.Scene()
 const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 1000)
-camera.position.set(11, 11, 11)
+camera.position.set(11, 21, 31)
 camera.lookAt(0, 0, 0)
-offsetCameraToUi()
+const cameraControls = shallowRef<CameraControls>()
 const renderer = new THREE.WebGLRenderer()
-renderer.setAnimationLoop(animate)
 renderer.setSize(window.innerWidth, window.innerHeight)
 renderer.setClearColor("#181818")
 const composer = new EffectComposer(renderer)
@@ -29,27 +30,11 @@ const renderPass = new RenderPass(scene, camera)
 composer.addPass(renderPass)
 const outputPass = new OutputPass()
 composer.addPass(outputPass)
-const controls = new OrbitControls(camera, renderer.domElement)
-controls.enableDamping = true
-controls.dampingFactor = 0.05
-controls.enablePan = false
-const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8)
-directionalLight.position.set(5, 10, 7)
-scene.add(directionalLight)
 
+let previousTime = 0
 var stats = new Stats()
 stats.showPanel(0)
 document.body.appendChild(stats.dom)
-
-function offsetCameraToUi() {
-  const width = window.innerWidth
-  const height = window.innerHeight
-  const uiHeight = 96 - 28
-  const offsetY = width > 900 ? height * (uiHeight / height / 2) : -height / 4
-  const offsetX = width > 900 ? width / 8 : 0
-  camera.aspect = width / height
-  camera.setViewOffset(width, height, offsetX, offsetY, width, height)
-}
 
 function setActiveCountryCode(countryCode: CountryCode | undefined) {
   emit("setActiveCountryCode", countryCode)
@@ -58,27 +43,51 @@ function setActiveCountryCode(countryCode: CountryCode | undefined) {
 function onWindowResize() {
   const width = window.innerWidth
   const height = window.innerHeight
-  offsetCameraToUi()
   camera.updateProjectionMatrix()
   renderer.setSize(width, height)
   composer.setSize(width, height)
+  cameraControls.value?.updateCameraUp()
 }
 
-function animate() {
+function animate(currentTime: number) {
   stats.begin()
-  controls.update()
+
+  if (cameraControls.value) {
+    const delta = (currentTime - previousTime) / 1000
+    cameraControls.value.update(delta)
+  }
+
   composer.render()
   stats.end()
+
+  previousTime = currentTime
+  requestAnimationFrame(animate)
 }
 
 onMounted(() => {
   container.value.appendChild(renderer.domElement)
   window.addEventListener("resize", onWindowResize)
-  animate()
+
+  cameraControls.value = new CameraControls(camera, renderer.domElement)
+  cameraControls.value.dollyToCursor = false
+  cameraControls.value.draggingDampingFactor = 0.1
+  cameraControls.value.smoothTime = 0.25
+  cameraControls.value.verticalDragToForward = false
+  cameraControls.value.minDistance = 5
+  cameraControls.value.maxDistance = 50
+  cameraControls.value.minPolarAngle = 0
+  cameraControls.value.maxPolarAngle = Math.PI
+  cameraControls.value.truckSpeed = 2.0
+  cameraControls.value.mouseButtons.wheel = CameraControls.ACTION.ZOOM
+  cameraControls.value.setLookAt(11, 21, 31, 0, 0, 0, true)
+
+  previousTime = performance.now()
+  requestAnimationFrame(animate)
 })
 
 onUnmounted(() => {
   window.removeEventListener("resize", onWindowResize)
+  cameraControls.value?.dispose()
 })
 </script>
 
@@ -90,6 +99,7 @@ onUnmounted(() => {
       :camera="camera"
       :renderer="renderer"
       :composer="composer"
+      :cameraControls="cameraControls"
     />
     <EarthOcean :scene="scene" />
   </div>

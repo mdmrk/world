@@ -27,7 +27,6 @@ onMounted(() => {
       <div>
         {{ START_YEAR }}
       </div>
-
       <div>
         {{ END_YEAR }}
       </div>
