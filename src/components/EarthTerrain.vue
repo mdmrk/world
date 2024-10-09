@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import type { CountryCode } from "@/types"
+import { isMobile } from "@/utils"
 import type CameraControls from "camera-controls"
 import * as THREE from "three"
 import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader"
@@ -332,7 +333,9 @@ onMounted(() => {
   loadModel()
   initRenderTargets()
   props.renderer.domElement.addEventListener("mouseup", handleClick)
-  window.addEventListener("pointermove", handleHover)
+  if (!isMobile()) {
+    window.addEventListener("pointermove", handleHover)
+  }
   window.addEventListener("mousedown", registerFirstClick)
   animate()
 })
