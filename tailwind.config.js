@@ -7,6 +7,9 @@ export default {
     extend: {
       fontFamily: {
         sans: ['"Sofia Sans Condensed"', ...defaultTheme.fontFamily.sans]
+      },
+      gridTemplateColumns: {
+        population: "60px 100px 60px 100px 60px"
       }
     }
   },

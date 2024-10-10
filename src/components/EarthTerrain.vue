@@ -182,6 +182,7 @@ function zoomToCountry(country: THREE.Mesh): Promise<void[]> {
   const aabb = new THREE.Box3().setFromObject(country)
   const center = new THREE.Vector3()
   aabb.getCenter(center)
+
   const directionToCountry = center.clone().normalize()
   const quaternion = new THREE.Quaternion().setFromUnitVectors(
     new THREE.Vector3(0, 0, 1),
@@ -220,7 +221,10 @@ function zoomToCountry(country: THREE.Mesh): Promise<void[]> {
     promises.push(props.cameraControls.zoomTo(zoom, true))
   }
 
+  // Reset any focal offset
   promises.push(props.cameraControls.setFocalOffset(0, 0, 0, true))
+
+  // Rotate the camera to face the country
   const spherical = new THREE.Spherical().setFromVector3(directionToCountry)
   promises.push(props.cameraControls.rotateTo(spherical.theta, spherical.phi, true))
 

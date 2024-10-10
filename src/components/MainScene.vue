@@ -20,6 +20,7 @@ const scene = new THREE.Scene()
 const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 1000)
 camera.position.set(11, 21, 31)
 camera.lookAt(0, 0, 0)
+offsetCamera()
 const cameraControls = shallowRef<CameraControls>()
 const renderer = new THREE.WebGLRenderer()
 renderer.setSize(window.innerWidth, window.innerHeight)
@@ -40,6 +41,15 @@ function setActiveCountryCode(countryCode: CountryCode | undefined) {
   emit("setActiveCountryCode", countryCode)
 }
 
+function offsetCamera() {
+  const width = window.innerWidth
+  const height = window.innerHeight
+  const uiHeight = 96 - 28
+  const offsetX = 0
+  const offsetY = uiHeight / 2
+  camera.setViewOffset(width, height, offsetX, offsetY, width, height)
+}
+
 function onWindowResize() {
   const width = window.innerWidth
   const height = window.innerHeight
@@ -48,6 +58,7 @@ function onWindowResize() {
   renderer.setSize(width, height)
   composer.setSize(width, height)
   cameraControls.value?.updateCameraUp()
+  offsetCamera()
 }
 
 function animate(currentTime: number) {

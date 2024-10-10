@@ -1,18 +1,23 @@
 <script setup lang="ts">
-import type { CountryCode, PopulationData } from "@/types"
-import { onMounted } from "vue"
+import FloatingMenu from "@/components/FloatingMenu.vue"
+import PopulationChart from "@/components/PopulationChart.vue"
+import TimelineSlider from "@/components/TimelineSlider.vue"
+import { type CountryCode, type PopulationData } from "@/types"
+import { onMounted, reactive, ref } from "vue"
 
-const START_YEAR = 1950
-const END_YEAR = 2024
-const year = defineModel({ default: 2000 })
+let populationData = reactive<PopulationData>({} as PopulationData)
+const year = ref(2000)
+
 const props = defineProps<{
   activeCountryCode: CountryCode | undefined
 }>()
-let populationData: PopulationData | undefined = undefined
+
+function updateYear(newYear: number) {
+  year.value = newYear
+}
 
 async function loadPopulationData() {
   const loadedPopulationData = (await import("@/assets/populationData.json")) as PopulationData
-
   populationData = loadedPopulationData
 }
 
@@ -22,15 +27,12 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="w-full h-24 absolute bottom-0 select-none pb-4 px-4 flex flex-col">
-    <div class="flex justify-between px-2 text-lg">
-      <div>
-        {{ START_YEAR }}
-      </div>
-      <div>
-        {{ END_YEAR }}
-      </div>
-    </div>
-    <input id="timeline" type="range" :min="START_YEAR" :max="END_YEAR" v-model="year" />
-  </div>
+  <FloatingMenu>
+    <PopulationChart
+      :active-country-code="activeCountryCode"
+      :population-data="populationData"
+      :year="year"
+    />
+  </FloatingMenu>
+  <TimelineSlider :modelValue="year" @update:modelValue="updateYear" />
 </template>
