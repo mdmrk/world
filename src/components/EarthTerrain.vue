@@ -20,13 +20,12 @@ const world = shallowRef<THREE.Object3D>()
 const raycaster = new THREE.Raycaster()
 const mouse = new THREE.Vector2()
 const countryMaterials = new Map<CountryCode, THREE.Material>()
+const colors = ["#bc6c25", "#588157", "#a3b18a", "#a68a64"].map((color) => new THREE.Color(color))
 
 let startClick = {
   x: 0,
   y: 0
 }
-
-const colors = [new THREE.Color(1, 0, 0), new THREE.Color(0, 1, 0), new THREE.Color(0, 0, 1)]
 
 function createCountryMaterial(countryCode: CountryCode) {
   const color = colors[Math.floor(Math.random() * colors.length)]

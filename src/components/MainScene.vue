@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import EarthOcean from "@/components/EarthOcean.vue"
 import EarthTerrain from "@/components/EarthTerrain.vue"
+import Stars from "@/components/Stars.vue"
 import { initialCameraLookAt, initialCameraPosition } from "@/consts"
 import type { CountryCode } from "@/types"
 import CameraControls from "camera-controls"
@@ -169,6 +170,7 @@ onUnmounted(() => {
 
 <template>
   <div class="w-full h-full" ref="container">
+    <Stars :scene="scene" />
     <EarthTerrain
       @set-active-country-code="setActiveCountryCode"
       :scene="scene"
