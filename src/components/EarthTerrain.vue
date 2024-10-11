@@ -31,7 +31,7 @@ function createCountryMaterial(countryCode: CountryCode) {
   const color = colors[Math.floor(Math.random() * colors.length)]
   const material = new THREE.MeshPhongMaterial({
     color: color,
-    shininess: 30
+    shininess: 0
   })
   countryMaterials.set(countryCode, material)
   return material
@@ -50,13 +50,16 @@ function handleClick(event: MouseEvent) {
 
     if (intersects.length > 0 && intersects[0].object instanceof THREE.Mesh) {
       const countryCode = intersects[0].object.name as CountryCode
-      if (["Ocean", "AQ"].indexOf(countryCode) !== -1) {
-        emit("setActiveCountryCode", undefined)
-        resetZoom()
-      } else {
+      if (["Ocean", "AQ"].indexOf(countryCode) === -1) {
         emit("setActiveCountryCode", countryCode)
         zoomToCountry(intersects[0].object)
+      } else {
+        emit("setActiveCountryCode", undefined)
+        resetZoom()
       }
+    } else {
+      emit("setActiveCountryCode", undefined)
+      resetZoom()
     }
   }
 }
