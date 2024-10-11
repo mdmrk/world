@@ -1,3 +1,5 @@
+@import "/node_modules/flag-icons/css/flag-icons.min.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -10,7 +12,7 @@
 
 @layer components {
   #timeline {
-    @apply w-full h-full bg-transparent appearance-none cursor-pointer border-4 border-rose-500 rounded-lg bg-gray-100 p-1;
+    @apply w-full h-full bg-transparent appearance-none cursor-pointer border-4 border-accent rounded-lg bg-light p-1;
   }
 
   #timeline::-webkit-slider-runnable-track {
@@ -22,10 +24,14 @@
   }
 
   #timeline::-webkit-slider-thumb {
-    @apply appearance-none w-1 h-full bg-rose-500 cursor-pointer;
+    @apply appearance-none w-1.5 h-full bg-accent cursor-pointer;
   }
 
   #timeline::-moz-range-thumb {
-    @apply w-1 h-full bg-rose-500 border-none cursor-pointer;
+    @apply w-1.5 h-full bg-accent border-none cursor-pointer;
+  }
+
+  .transparent-gradient {
+    mask-image: radial-gradient(ellipse at top right, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 70%);
   }
 }

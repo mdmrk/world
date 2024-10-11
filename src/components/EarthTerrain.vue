@@ -221,10 +221,7 @@ function zoomToCountry(country: THREE.Mesh): Promise<void[]> {
     promises.push(props.cameraControls.zoomTo(zoom, true))
   }
 
-  // Reset any focal offset
   promises.push(props.cameraControls.setFocalOffset(0, 0, 0, true))
-
-  // Rotate the camera to face the country
   const spherical = new THREE.Spherical().setFromVector3(directionToCountry)
   promises.push(props.cameraControls.rotateTo(spherical.theta, spherical.phi, true))
 
