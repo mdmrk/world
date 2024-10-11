@@ -4,6 +4,7 @@ import EarthTerrain from "@/components/EarthTerrain.vue"
 import Stars from "@/components/Stars.vue"
 import { initialCameraLookAt, initialCameraPosition } from "@/consts"
 import type { CountryCode } from "@/types"
+import { isDev } from "@/utils"
 import CameraControls from "camera-controls"
 import gsap from "gsap"
 import Stats from "stats.js"
@@ -55,8 +56,10 @@ function initScene() {
   const outputPass = new OutputPass()
   composer.addPass(outputPass)
 
-  stats.showPanel(0)
-  document.body.appendChild(stats.dom)
+  if (isDev()) {
+    stats.showPanel(0)
+    document.body.appendChild(stats.dom)
+  }
 }
 
 function initCameraControls() {
@@ -135,7 +138,9 @@ function onWindowResize() {
 }
 
 function animate(currentTime: number) {
-  stats.begin()
+  if (isDev()) {
+    stats.begin()
+  }
 
   if (cameraControls.value) {
     const delta = (currentTime - previousTime) / 1000
@@ -143,7 +148,10 @@ function animate(currentTime: number) {
   }
 
   composer.render()
-  stats.end()
+
+  if (isDev()) {
+    stats.end()
+  }
 
   previousTime = currentTime
   requestAnimationFrame(animate)
@@ -164,7 +172,9 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener("resize", onWindowResize)
   cameraControls.value?.dispose()
-  stats.dom.remove()
+  if (isDev()) {
+    stats.dom.remove()
+  }
 })
 </script>
 
