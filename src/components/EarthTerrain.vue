@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import type { CountryCode } from "@/types"
-import { isMobile } from "@/utils"
 import type CameraControls from "camera-controls"
 import * as THREE from "three"
 import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader"
@@ -19,7 +18,6 @@ const loader = new FBXLoader()
 const world = shallowRef<THREE.Object3D>()
 const raycaster = new THREE.Raycaster()
 const mouse = new THREE.Vector2()
-const hoveredCountry = shallowRef<THREE.Mesh | undefined>(undefined)
 const countryMaterials = new Map<CountryCode, THREE.Material>()
 
 let startClick = {
@@ -39,37 +37,27 @@ function createCountryMaterial(countryCode: CountryCode) {
   return material
 }
 
-function handleHover(event: MouseEvent) {
-  mouse.x = (event.clientX / window.innerWidth) * 2 - 1
-  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1
-
-  raycaster.setFromCamera(mouse, props.camera)
-
-  if (world.value) {
-    const intersects = raycaster.intersectObjects(world.value.children, true)
-
-    let newHoveredCountry: THREE.Mesh | undefined = undefined
-    if (intersects.length > 0 && intersects[0].object instanceof THREE.Mesh) {
-      newHoveredCountry = intersects[0].object
-    }
-
-    if (newHoveredCountry !== hoveredCountry.value) {
-      hoveredCountry.value = newHoveredCountry
-    }
-  }
-}
-
 function handleClick(event: MouseEvent) {
   if (!isClickAndNotDrag(event.pageX, event.pageY)) {
     return
   }
-  if (hoveredCountry.value) {
-    const countryCode = hoveredCountry.value.name as CountryCode
-    emit("setActiveCountryCode", countryCode)
-    zoomToCountry(hoveredCountry.value)
-  } else {
-    emit("setActiveCountryCode", undefined)
-    resetZoom()
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1
+  raycaster.setFromCamera(mouse, props.camera)
+
+  if (world.value) {
+    const intersects = raycaster.intersectObjects(world.value.children)
+
+    if (intersects.length > 0 && intersects[0].object instanceof THREE.Mesh) {
+      const countryCode = intersects[0].object.name as CountryCode
+      if (["Ocean", "AQ"].indexOf(countryCode) !== -1) {
+        emit("setActiveCountryCode", undefined)
+        resetZoom()
+      } else {
+        emit("setActiveCountryCode", countryCode)
+        zoomToCountry(intersects[0].object)
+      }
+    }
   }
 }
 
@@ -197,9 +185,6 @@ onMounted(() => {
   setupLighting()
   loadModel()
   props.renderer.domElement.addEventListener("mouseup", handleClick)
-  if (!isMobile()) {
-    window.addEventListener("pointermove", handleHover)
-  }
   window.addEventListener("mousedown", registerFirstClick)
   window.addEventListener("resize", onWindowResize)
   animate()
@@ -208,9 +193,6 @@ onMounted(() => {
 onUnmounted(() => {
   props.renderer.domElement.removeEventListener("mouseup", handleClick)
   window.removeEventListener("mousedown", registerFirstClick)
-  if (!isMobile()) {
-    window.removeEventListener("pointermove", handleHover)
-  }
   window.removeEventListener("resize", onWindowResize)
 })
 </script>
