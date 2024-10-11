@@ -12,7 +12,6 @@ function setActiveCountryCode(countryCode: CountryCode | undefined) {
 
 onMounted(async () => {
   await delay(100)
-  setActiveCountryCode("ES")
 })
 </script>
 

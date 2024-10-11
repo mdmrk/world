@@ -39,7 +39,7 @@ const yearByAgeGroupPopulation = computed(() => {
 <template>
   <div
     v-if="activeCountryCode"
-    class="text-lg z-10 w-auto h-auto absolute top-8 right-8 select-none py-4 px-4 flex flex-col bg-dark bg-opacity-75 border border-dark rounded-xl items-center"
+    class="text-lg z-10 w-auto h-auto absolute top-8 right-8 select-none py-4 px-4 flex flex-col bg-dark bg-opacity-75 border border-dark rounded-xl items-center overflow-hidden"
   >
     <div
       :class="`fi-${activeCountryCode.toLowerCase()}`"
@@ -47,7 +47,7 @@ const yearByAgeGroupPopulation = computed(() => {
     ></div>
 
     <div class="text-center z-10">
-      Population in <span class="text-2xl">{{ CountryList[activeCountryCode] }}</span> ({{ year }})
+      <span class="text-2xl">{{ CountryList[activeCountryCode] }}</span> ({{ year }}) population
     </div>
     <div class="text-3xl z-10">
       {{ yearTotalPopulation }}
