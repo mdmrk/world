@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { initialCameraLookAt, initialCameraPosition } from "@/consts"
 import type { CountryCode } from "@/types"
 import type CameraControls from "camera-controls"
 import * as THREE from "three"
@@ -121,7 +122,16 @@ function resetZoom() {
   if (!props.cameraControls) {
     return
   }
-  props.cameraControls.setLookAt(11, 21, 31, 0, 0, 0, true)
+  props.cameraControls.setLookAt(
+    initialCameraPosition.x,
+    initialCameraPosition.y,
+    initialCameraPosition.z,
+    initialCameraLookAt.x,
+    initialCameraLookAt.y,
+    initialCameraLookAt.z,
+    true
+  )
+  props.cameraControls.zoomTo(1, true)
 }
 
 function animate() {

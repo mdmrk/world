@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import EarthOcean from "@/components/EarthOcean.vue"
 import EarthTerrain from "@/components/EarthTerrain.vue"
+import { initialCameraLookAt, initialCameraPosition } from "@/consts"
 import type { CountryCode } from "@/types"
 import CameraControls from "camera-controls"
 import gsap from "gsap"
@@ -30,8 +31,17 @@ let previousTime = 0
 const stats = new Stats()
 
 function initScene() {
-  camera.position.set(11, 21, 31)
-  camera.lookAt(0, 0, 0)
+  if (cameraControls.value) {
+    cameraControls.value.setLookAt(
+      initialCameraPosition.x,
+      initialCameraPosition.y,
+      initialCameraPosition.z,
+      initialCameraLookAt.x,
+      initialCameraLookAt.y,
+      initialCameraLookAt.z,
+      false
+    )
+  }
 
   renderer.setSize(window.innerWidth, window.innerHeight)
   renderer.setClearColor("#000000")
@@ -60,7 +70,15 @@ function initCameraControls() {
   cameraControls.value.maxPolarAngle = Math.PI
   cameraControls.value.truckSpeed = 2.0
   cameraControls.value.mouseButtons.wheel = CameraControls.ACTION.ZOOM
-  cameraControls.value.setLookAt(11, 21, 31, 0, 0, 0, true)
+  cameraControls.value.setLookAt(
+    initialCameraPosition.x,
+    initialCameraPosition.y,
+    initialCameraPosition.z,
+    initialCameraLookAt.x,
+    initialCameraLookAt.y,
+    initialCameraLookAt.z,
+    true
+  )
 }
 
 function setActiveCountryCode(countryCode: CountryCode | undefined) {
@@ -132,11 +150,12 @@ function animate(currentTime: number) {
 
 onMounted(() => {
   if (container.value) {
+    initCameraControls()
     initScene()
     container.value.appendChild(renderer.domElement)
-    initCameraControls()
     window.addEventListener("resize", onWindowResize)
     previousTime = performance.now()
+    offsetCamera()
     requestAnimationFrame(animate)
   }
 })
