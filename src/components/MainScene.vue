@@ -73,7 +73,7 @@ function initCameraControls() {
   cameraControls.value.minPolarAngle = 0
   cameraControls.value.maxPolarAngle = Math.PI
   cameraControls.value.truckSpeed = 2.0
-  cameraControls.value.mouseButtons.wheel = CameraControls.ACTION.ZOOM
+  cameraControls.value.mouseButtons.wheel = CameraControls.ACTION.DOLLY
   cameraControls.value.setLookAt(
     initialCameraPosition.x,
     initialCameraPosition.y,

@@ -160,7 +160,7 @@ export const CountryList = {
   HT: "Haiti",
   CG: "Congo",
   BY: "Belarus",
-  TR: "Turkey",
+  TR: "Türkiye",
   VE: "Venezuela",
   LU: "Luxembourg",
   MS: "Montserrat",

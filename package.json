@@ -17,7 +17,7 @@
     "flag-icons": "^7.2.3",
     "gsap": "^3.12.5",
     "three": "^0.169.0",
-    "vue": "^3.5.11"
+    "vue": "^3.5.12"
   },
   "devDependencies": {
     "@eslint/compat": "^1.2.0",

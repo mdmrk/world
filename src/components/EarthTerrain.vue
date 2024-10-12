@@ -104,10 +104,6 @@ function zoomToCountry(country: THREE.Mesh): Promise<void[]> {
     const fov = props.cameraControls.camera.fov * (Math.PI / 180)
     const distance = Math.max(size.x, size.y) / (2 * Math.tan(fov / 2))
     promises.push(props.cameraControls.dollyTo(distance, true))
-  } else if (props.cameraControls.camera instanceof THREE.OrthographicCamera) {
-    const aspect = props.cameraControls.camera.right / props.cameraControls.camera.top
-    const zoom = Math.min(1 / size.x, 1 / (size.y * aspect))
-    promises.push(props.cameraControls.zoomTo(zoom, true))
   }
 
   promises.push(props.cameraControls.setFocalOffset(0, 0, 0, true))
@@ -130,7 +126,7 @@ function resetZoom() {
     initialCameraLookAt.z,
     true
   )
-  props.cameraControls.zoomTo(1, true)
+  props.cameraControls.dollyTo(initialCameraPosition.length(), true)
 }
 
 function animate() {
