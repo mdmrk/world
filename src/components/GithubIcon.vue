@@ -1,7 +1,7 @@
 <template>
   <a href="https://github.com/mdmrk/world" target="_blank">
     <svg
-      class="fill-none hover:fill-dark/50 hover:animate-shake absolute top-8 left-8 stroke-2 stroke-light cursor-pointer"
+      class="fill-none hover:fill-dark/50 hover:animate-shake absolute top-8 left-8 stroke-2 stroke-light cursor-pointer z-20"
       xmlns="http://www.w3.org/2000/svg"
       width="24"
       height="24"
