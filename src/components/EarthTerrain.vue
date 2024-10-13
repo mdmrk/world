@@ -22,7 +22,7 @@ const mouse = new THREE.Vector2()
 const countryMaterials = new Map<CountryCode, THREE.Material>()
 const colors = ["#bc6c25", "#588157", "#a3b18a", "#a68a64"].map((color) => new THREE.Color(color))
 
-let startClick = {
+let startInteraction = {
   x: 0,
   y: 0
 }
@@ -37,33 +37,6 @@ function createCountryMaterial(countryCode: CountryCode) {
   return material
 }
 
-function handleClick(event: MouseEvent) {
-  if (!isClickAndNotDrag(event.pageX, event.pageY)) {
-    return
-  }
-  mouse.x = (event.clientX / window.innerWidth) * 2 - 1
-  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1
-  raycaster.setFromCamera(mouse, props.camera)
-
-  if (world.value) {
-    const intersects = raycaster.intersectObjects(world.value.children)
-
-    if (intersects.length > 0 && intersects[0].object instanceof THREE.Mesh) {
-      const countryCode = intersects[0].object.name as CountryCode
-      if (["Ocean", "AQ"].indexOf(countryCode) === -1) {
-        emit("setActiveCountryCode", countryCode)
-        zoomToCountry(intersects[0].object)
-      } else {
-        emit("setActiveCountryCode", undefined)
-        resetZoom()
-      }
-    } else {
-      emit("setActiveCountryCode", undefined)
-      resetZoom()
-    }
-  }
-}
-
 function zoomToCountry(country: THREE.Mesh): Promise<void[]> {
   if (!country || !props.cameraControls) return Promise.resolve([])
 
@@ -71,6 +44,10 @@ function zoomToCountry(country: THREE.Mesh): Promise<void[]> {
   const aabb = new THREE.Box3().setFromObject(country)
   const center = new THREE.Vector3()
   aabb.getCenter(center)
+
+  const padding = 0.2
+  aabb.min.subScalar(padding)
+  aabb.max.addScalar(padding)
 
   const directionToCountry = center.clone().normalize()
   const quaternion = new THREE.Quaternion().setFromUnitVectors(
@@ -102,7 +79,8 @@ function zoomToCountry(country: THREE.Mesh): Promise<void[]> {
 
   if (props.cameraControls.camera instanceof THREE.PerspectiveCamera) {
     const fov = props.cameraControls.camera.fov * (Math.PI / 180)
-    const distance = Math.max(size.x, size.y) / (2 * Math.tan(fov / 2))
+    const aspectRatio = props.cameraControls.camera.aspect
+    const distance = Math.max(size.x / aspectRatio, size.y) / (2 * Math.tan(fov / 2))
     promises.push(props.cameraControls.dollyTo(distance, true))
   }
 
@@ -178,29 +156,74 @@ function onWindowResize() {
 }
 
 function registerFirstClick(event: MouseEvent) {
-  startClick.x = event.pageX
-  startClick.y = event.pageY
+  startInteraction.x = event.pageX
+  startInteraction.y = event.pageY
+}
+
+function isTouchEvent(event: Event): event is TouchEvent {
+  return "touches" in event
+}
+
+function handleInteractionStart(event: MouseEvent | TouchEvent) {
+  const point = isTouchEvent(event) ? event.touches[0] : event
+  startInteraction.x = point.pageX
+  startInteraction.y = point.pageY
+}
+
+function handleInteractionEnd(event: MouseEvent | TouchEvent) {
+  const point = isTouchEvent(event) ? event.touches[0] : event
+  if (!isClickAndNotDrag(point.pageX, point.pageY)) {
+    return
+  }
+
+  mouse.x = (point.clientX / window.innerWidth) * 2 - 1
+  mouse.y = -(point.clientY / window.innerHeight) * 2 + 1
+  raycaster.setFromCamera(mouse, props.camera)
+
+  if (world.value) {
+    const intersects = raycaster.intersectObjects(world.value.children)
+
+    if (intersects.length > 0 && intersects[0].object instanceof THREE.Mesh) {
+      const countryCode = intersects[0].object.name as CountryCode
+      if (["Ocean", "AQ"].indexOf(countryCode) === -1) {
+        emit("setActiveCountryCode", countryCode)
+        zoomToCountry(intersects[0].object)
+      } else {
+        emit("setActiveCountryCode", undefined)
+        resetZoom()
+      }
+    } else {
+      emit("setActiveCountryCode", undefined)
+      resetZoom()
+    }
+  }
 }
 
 function isClickAndNotDrag(x: number, y: number): boolean {
   const delta = 6
-  const diffX = Math.abs(x - startClick.x)
-  const diffY = Math.abs(y - startClick.y)
+  const diffX = Math.abs(x - startInteraction.x)
+  const diffY = Math.abs(y - startInteraction.y)
   return diffX < delta && diffY < delta
 }
 
 onMounted(() => {
   setupLighting()
   loadModel()
-  props.renderer.domElement.addEventListener("mouseup", handleClick)
-  window.addEventListener("mousedown", registerFirstClick)
+  const canvas = props.renderer.domElement
+  canvas.addEventListener("mousedown", handleInteractionStart)
+  canvas.addEventListener("mouseup", handleInteractionEnd)
+  canvas.addEventListener("touchstart", handleInteractionStart)
+  canvas.addEventListener("touchend", handleInteractionEnd)
   window.addEventListener("resize", onWindowResize)
   animate()
 })
 
 onUnmounted(() => {
-  props.renderer.domElement.removeEventListener("mouseup", handleClick)
-  window.removeEventListener("mousedown", registerFirstClick)
+  const canvas = props.renderer.domElement
+  canvas.removeEventListener("mousedown", handleInteractionStart)
+  canvas.removeEventListener("mouseup", handleInteractionEnd)
+  canvas.removeEventListener("touchstart", handleInteractionStart)
+  canvas.removeEventListener("touchend", handleInteractionEnd)
   window.removeEventListener("resize", onWindowResize)
 })
 </script>

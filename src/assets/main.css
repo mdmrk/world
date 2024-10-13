@@ -24,11 +24,11 @@
   }
 
   #timeline::-webkit-slider-thumb {
-    @apply appearance-none w-1.5 h-full bg-accent cursor-pointer;
+    @apply appearance-none w-1.5 h-full bg-accent cursor-pointer rounded-full;
   }
 
   #timeline::-moz-range-thumb {
-    @apply w-1.5 h-full bg-accent border-none cursor-pointer;
+    @apply w-1.5 h-full bg-accent border-none cursor-pointer rounded-full;
   }
 
   .transparent-gradient {

@@ -16,7 +16,8 @@ export default {
         sans: ['"Sofia Sans Condensed"', ...defaultTheme.fontFamily.sans]
       },
       gridTemplateColumns: {
-        population: "60px 100px 60px 100px 60px"
+        population: "60px 100px 60px 100px 60px",
+        "population-mobile": "60px 1fr 60px 1fr 60px"
       }
     }
   },

@@ -23,9 +23,10 @@ const emit = defineEmits<{
 
 const container = ref<HTMLElement>()
 const offsetX = ref(0)
+const offsetY = ref(0)
 const scene = new THREE.Scene()
 const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 1000)
-const renderer = new THREE.WebGLRenderer({ antialias: true })
+const renderer = new THREE.WebGLRenderer()
 const composer = new EffectComposer(renderer)
 const cameraControls = shallowRef<CameraControls>()
 
@@ -68,11 +69,11 @@ function initCameraControls() {
   cameraControls.value.draggingDampingFactor = 0.1
   cameraControls.value.smoothTime = 0.25
   cameraControls.value.verticalDragToForward = false
-  cameraControls.value.minDistance = 5
-  cameraControls.value.maxDistance = 50
+  cameraControls.value.minDistance = 10
+  cameraControls.value.maxDistance = 70
   cameraControls.value.minPolarAngle = 0
   cameraControls.value.maxPolarAngle = Math.PI
-  cameraControls.value.truckSpeed = 2.0
+  cameraControls.value.truckSpeed = 0
   cameraControls.value.mouseButtons.wheel = CameraControls.ACTION.DOLLY
   cameraControls.value.setLookAt(
     initialCameraPosition.x,
@@ -87,17 +88,17 @@ function initCameraControls() {
 
 function setActiveCountryCode(countryCode: CountryCode | undefined) {
   emit("setActiveCountryCode", countryCode)
-  const chartW = 414 + 32
+  const chartW = window.innerWidth < 1024 ? 0 : 414 + 32
+  const timelineH = window.innerWidth < 1024 ? 80 - 32 - 550 : 80 - 32 + 16
   const targetOffsetX = countryCode === undefined ? 0 : chartW / 2
-  tweenOffsetX(targetOffsetX)
+  const targetOffsetY = countryCode === undefined ? 0 : timelineH / 2
+  tweenOffsets(targetOffsetX, targetOffsetY)
 }
 
 function offsetCamera() {
   const width = window.innerWidth
   const height = window.innerHeight
-  const timelineH = 80 - 32 + 16
-  const offsetY = timelineH / 2
-  camera.setViewOffset(width, height, offsetX.value, offsetY, width, height)
+  camera.setViewOffset(width, height, offsetX.value, offsetY.value, width, height)
 }
 
 function updateOffsetX(value: number) {
@@ -105,12 +106,23 @@ function updateOffsetX(value: number) {
   offsetCamera()
 }
 
-function tweenOffsetX(targetValue: number) {
+function updateOffsetY(value: number) {
+  offsetY.value = value
+  offsetCamera()
+}
+
+function tweenOffsets(targetOffsetX: number, targetOffsetY: number) {
   gsap.to(offsetX, {
-    value: targetValue,
+    value: targetOffsetX,
     duration: 1,
     ease: "power1.out",
     onUpdate: () => updateOffsetX(offsetX.value)
+  })
+  gsap.to(offsetY, {
+    value: targetOffsetY,
+    duration: 1,
+    ease: "power1.out",
+    onUpdate: () => updateOffsetY(offsetY.value)
   })
 }
 

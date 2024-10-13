@@ -17,7 +17,7 @@ const updateValue = (event: Event) => {
 </script>
 <template>
   <div
-    class="w-full max-w-96 h-20 absolute bottom-4 left-1/2 -translate-x-1/2 select-none flex flex-col"
+    class="w-full max-w-96 h-20 absolute bottom-4 left-1/2 -translate-x-1/2 px-4 select-none flex flex-col"
   >
     <div class="flex justify-between px-2 text-2xl">
       <div>{{ START_YEAR }}</div>
