@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import FloatingMenu from "@/components/FloatingMenu.vue"
+import GithubIcon from "@/components/GithubIcon.vue"
 import PopulationChart from "@/components/PopulationChart.vue"
 import TimelineSlider from "@/components/TimelineSlider.vue"
+
 import { type CountryCode, type PopulationData } from "@/types"
 import { onMounted, reactive, ref } from "vue"
 
@@ -27,6 +29,7 @@ onMounted(() => {
 </script>
 
 <template>
+  <GithubIcon />
   <FloatingMenu>
     <PopulationChart
       :active-country-code="activeCountryCode"

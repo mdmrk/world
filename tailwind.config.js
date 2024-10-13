@@ -18,6 +18,23 @@ export default {
       gridTemplateColumns: {
         population: "60px 100px 60px 100px 60px",
         "population-mobile": "60px 1fr 60px 1fr 60px"
+      },
+      animation: {
+        shake: "shake 5s ease infinite"
+      },
+      keyframes: {
+        shake: {
+          "0%": { transform: "rotate(-12deg)" },
+          "8%": { transform: "rotate(12deg)" },
+          "10%": { transform: "rotate(24deg)" },
+          "18%, 20%": { transform: "rotate(-24deg)" },
+          "28%, 30%": { transform: "rotate(24deg)" },
+          "38%, 40%": { transform: "rotate(-24deg)" },
+          "48%, 50%": { transform: "rotate(24deg)" },
+          "58%, 60%": { transform: "rotate(-24deg)" },
+          "68%": { transform: "rotate(24deg)" },
+          "75%, 100%": { transform: "rotate(0deg)" }
+        }
       }
     }
   },
