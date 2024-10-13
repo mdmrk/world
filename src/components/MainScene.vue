@@ -88,8 +88,8 @@ function initCameraControls() {
 
 function setActiveCountryCode(countryCode: CountryCode | undefined) {
   emit("setActiveCountryCode", countryCode)
-  const chartW = window.innerWidth < 1024 ? 0 : 414 + 32
-  const timelineH = window.innerWidth < 1024 ? 80 - 32 - 550 : 80 - 32 + 16
+  const chartW = window.innerWidth < 768 ? 0 : 414 + 32
+  const timelineH = window.innerWidth < 768 ? 80 - 32 - 550 : 80 - 32 + 16
   const targetOffsetX = countryCode === undefined ? 0 : chartW / 2
   const targetOffsetY = countryCode === undefined ? 0 : timelineH / 2
   tweenOffsets(targetOffsetX, targetOffsetY)
@@ -201,6 +201,6 @@ onUnmounted(() => {
       :composer="composer"
       :cameraControls="cameraControls"
     />
-    <EarthOcean :scene="scene" />
+    <EarthOcean :scene="scene" :camera="camera" />
   </div>
 </template>

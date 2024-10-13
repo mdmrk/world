@@ -20,7 +20,9 @@ const world = shallowRef<THREE.Object3D>()
 const raycaster = new THREE.Raycaster()
 const mouse = new THREE.Vector2()
 const countryMaterials = new Map<CountryCode, THREE.Material>()
-const colors = ["#bc6c25", "#588157", "#a3b18a", "#a68a64"].map((color) => new THREE.Color(color))
+const colors = ["#009688", "#8bc34a", "#ffc107", "#ff9800", "#f94144", "#b18bda"].map(
+  (color) => new THREE.Color(color)
+)
 
 let startInteraction = {
   x: 0,
@@ -137,7 +139,7 @@ async function loadModel() {
 }
 
 function setupLighting() {
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.5)
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.8)
   props.scene.add(ambientLight)
 
   const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8)

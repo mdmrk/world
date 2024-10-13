@@ -1,71 +1,91 @@
 <script setup lang="ts">
 import * as THREE from "three"
+import { onMounted, onUnmounted } from "vue"
 
-const { scene } = defineProps<{
+const props = defineProps<{
   scene: THREE.Scene
+  camera: THREE.PerspectiveCamera
 }>()
 
-const ico = new THREE.IcosahedronGeometry(4.97, 5)
+const earthRadius = 4.97
+const oceanGeometry = new THREE.SphereGeometry(earthRadius, 64, 64)
 
-const simpleWaterShader = {
+const oceanShader = {
   uniforms: {
     time: { value: 0 },
-    color: { value: new THREE.Color("#0096c7") },
-    waveHeight: { value: 0.03 },
-    waveFrequency: { value: 2.0 }
+    uSurfaceColor: { value: new THREE.Color("#00a6fb") },
+    uDepthColor: { value: new THREE.Color("#007ea7") },
+    uColorOffset: { value: 0.08 },
+    uColorMultiplier: { value: 5 },
+    uFresnelScale: { value: 1.0 },
+    uFresnelPower: { value: 1.5 }
   },
-
   vertexShader: `
     uniform float time;
-    uniform float waveHeight;
-    uniform float waveFrequency;
-    varying vec3 vPosition;
+    varying vec3 vNormal;
+    varying vec3 vWorldPosition;
 
     void main() {
-      vPosition = position;
+      vNormal = normalize(normalMatrix * normal);
       
-      // Simple wave effect
-      float wave = sin(position.x * waveFrequency + time) * 
-                   cos(position.z * waveFrequency + time) * 
-                   waveHeight;
+      vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+      vWorldPosition = worldPosition.xyz;
       
-      vec3 newPosition = position + normal * wave;
-      
-      gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+      float wave = sin(position.x * 2.0 + time) * 
+                   cos(position.z * 2.0 + time) * 0.02;
+      vec3 pos = position + normal * wave;
+
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
     }
   `,
-
   fragmentShader: `
-    uniform vec3 color;
-    varying vec3 vPosition;
+    uniform vec3 uSurfaceColor;
+    uniform vec3 uDepthColor;
+    uniform float uColorOffset;
+    uniform float uColorMultiplier;
+    uniform float uFresnelScale;
+    uniform float uFresnelPower;
+
+    varying vec3 vNormal;
+    varying vec3 vWorldPosition;
 
     void main() {
-      // Simple color gradient based on y-position
-      float gradient = smoothstep(-5.0, 5.0, vPosition.y);
-      vec3 finalColor = mix(color * 0.7, color, gradient);
+      vec3 viewDirection = normalize(cameraPosition - vWorldPosition);
+      float fresnel = uFresnelScale * pow(1.0 - max(0.0, dot(viewDirection, vNormal)), uFresnelPower);
       
-      gl_FragColor = vec4(finalColor, 1.0);
+      vec3 color = mix(uDepthColor, uSurfaceColor, fresnel * uColorMultiplier + uColorOffset);
+
+      gl_FragColor = vec4(color, 1.0);
     }
   `
 }
 
-const waterMaterial = new THREE.ShaderMaterial({
-  uniforms: THREE.UniformsUtils.clone(simpleWaterShader.uniforms),
-  vertexShader: simpleWaterShader.vertexShader,
-  fragmentShader: simpleWaterShader.fragmentShader
+const oceanMaterial = new THREE.ShaderMaterial({
+  uniforms: oceanShader.uniforms,
+  vertexShader: oceanShader.vertexShader,
+  fragmentShader: oceanShader.fragmentShader,
+  side: THREE.FrontSide
 })
 
-const ocean = new THREE.Mesh(ico, waterMaterial)
+const ocean = new THREE.Mesh(oceanGeometry, oceanMaterial)
 ocean.name = "Ocean"
-ocean.position.set(0, 0, 0)
-scene.add(ocean)
 
-// Animation loop to update time uniform
+let animationFrameId: number
+
 function animate() {
-  requestAnimationFrame(animate)
-  waterMaterial.uniforms.time.value += 0.01
+  oceanMaterial.uniforms.time.value += 0.01
+  animationFrameId = requestAnimationFrame(animate)
 }
-animate()
+
+onMounted(() => {
+  props.scene.add(ocean)
+  animate()
+})
+
+onUnmounted(() => {
+  props.scene.remove(ocean)
+  cancelAnimationFrame(animationFrameId)
+})
 </script>
 
 <template></template>
