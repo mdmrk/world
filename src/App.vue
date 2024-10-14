@@ -9,14 +9,9 @@ const activeCountryCode = ref<CountryCode | undefined>(undefined)
 function setActiveCountryCode(countryCode: CountryCode | undefined) {
   activeCountryCode.value = countryCode
 }
-
-onMounted(async () => {
-  await delay(100)
-})
 </script>
 
 <template>
-  <header></header>
   <main class="min-h-svh">
     <MainScene @set-active-country-code="setActiveCountryCode" />
     <UIHandler :active-country-code="activeCountryCode" />
