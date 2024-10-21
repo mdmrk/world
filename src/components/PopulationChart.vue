@@ -35,11 +35,10 @@ const yearByAgeGroupPopulation = computed(() => {
   return props.populationData[props.activeCountryCode][yearIndex.value]
 })
 </script>
-
 <template>
   <div
     v-if="activeCountryCode"
-    class="text-lg z-10 w-full md:w-auto h-auto absolute top-0 right-0 md:top-8 md:right-8 select-none py-4 px-4 flex flex-col bg-dark bg-opacity-25 md:bg-opacity-75 md:border border-dark md:rounded-xl items-center overflow-hidden"
+    class="text-lg z-10 w-full md:w-auto h-auto absolute top-0 right-0 md:fixed md:top-8 md:right-8 md:max-h-[calc(100vh-4rem)] select-none py-4 px-4 flex flex-col bg-dark bg-opacity-25 md:bg-opacity-75 md:border border-dark md:rounded-xl items-center overflow-hidden"
   >
     <div
       :class="`fi-${activeCountryCode.toLowerCase()}`"
@@ -60,22 +59,22 @@ const yearByAgeGroupPopulation = computed(() => {
       <div>&nbsp;</div>
       <div class="text-right">Females</div>
     </div>
-    <div
-      class="grid grid-cols-population-mobile md:grid-cols-population items-center z-10 w-full text-sm md:text-lg"
-      v-for="(ageGroup, index) in yearByAgeGroupPopulation"
-    >
-      <div class="text-left">
-        {{ nFormatter(ageGroup[0]) }}
-      </div>
-      <PopulationBar :align-right="true" :width="`${(ageGroup[0] / maxGenderValue) * 100}%`" />
-      <div class="text-center text-sm">
-        {{ index === 20 ? "100+" : index * 5 + "-" + (index * 5 + 4) }}
-      </div>
-
-      <PopulationBar :align-right="false" :width="`${(ageGroup[1] / maxGenderValue) * 100}%`" />
-
-      <div class="text-right">
-        {{ nFormatter(ageGroup[1]) }}
+    <div class="overflow-y-auto flex-grow">
+      <div
+        class="grid grid-cols-population-mobile md:grid-cols-population items-center z-10 w-full text-sm md:text-lg overflow-y-hidden"
+        v-for="(ageGroup, index) in yearByAgeGroupPopulation"
+      >
+        <div class="text-left">
+          {{ nFormatter(ageGroup[0]) }}
+        </div>
+        <PopulationBar :align-right="true" :width="`${(ageGroup[0] / maxGenderValue) * 100}%`" />
+        <div class="text-center text-sm">
+          {{ index === 20 ? "100+" : index * 5 + "-" + (index * 5 + 4) }}
+        </div>
+        <PopulationBar :align-right="false" :width="`${(ageGroup[1] / maxGenderValue) * 100}%`" />
+        <div class="text-right">
+          {{ nFormatter(ageGroup[1]) }}
+        </div>
       </div>
     </div>
   </div>

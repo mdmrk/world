@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import FloatingMenu from "@/components/FloatingMenu.vue"
 import GithubIcon from "@/components/GithubIcon.vue"
 import PopulationChart from "@/components/PopulationChart.vue"
 import TimelineSlider from "@/components/TimelineSlider.vue"
@@ -30,12 +29,10 @@ onMounted(() => {
 
 <template>
   <GithubIcon />
-  <FloatingMenu>
-    <PopulationChart
-      :active-country-code="activeCountryCode"
-      :population-data="populationData"
-      :year="year"
-    />
-  </FloatingMenu>
+  <PopulationChart
+    :active-country-code="activeCountryCode"
+    :population-data="populationData"
+    :year="year"
+  />
   <TimelineSlider :modelValue="year" @update:modelValue="updateYear" />
 </template>

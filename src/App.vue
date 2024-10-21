@@ -9,6 +9,11 @@ const activeCountryCode = ref<CountryCode | undefined>(undefined)
 function setActiveCountryCode(countryCode: CountryCode | undefined) {
   activeCountryCode.value = countryCode
 }
+
+onMounted(async () => {
+  await delay(100)
+  setActiveCountryCode("ES")
+})
 </script>
 
 <template>
