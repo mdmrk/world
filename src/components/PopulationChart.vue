@@ -38,7 +38,7 @@ const yearByAgeGroupPopulation = computed(() => {
 <template>
   <div
     v-if="activeCountryCode"
-    class="text-lg z-10 w-full md:w-auto h-auto absolute top-0 right-0 md:fixed md:top-8 md:right-8 md:max-h-[calc(100vh-4rem)] select-none py-4 px-4 flex flex-col bg-dark bg-opacity-25 md:bg-opacity-75 md:border border-dark md:rounded-xl items-center overflow-hidden"
+    class="text-lg z-10 w-full md:w-auto h-auto absolute top-0 right-0 md:fixed md:top-8 md:right-8 md:max-h-[calc(100vh-10rem)] select-none py-4 px-4 flex flex-col bg-dark bg-opacity-25 md:bg-opacity-75 md:border border-dark md:rounded-xl items-center overflow-hidden"
   >
     <div
       :class="`fi-${activeCountryCode.toLowerCase()}`"

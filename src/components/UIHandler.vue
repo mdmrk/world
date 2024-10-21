@@ -34,5 +34,9 @@ onMounted(() => {
     :population-data="populationData"
     :year="year"
   />
-  <TimelineSlider :modelValue="year" @update:modelValue="updateYear" />
+  <TimelineSlider
+    :active-country-code="activeCountryCode"
+    :modelValue="year"
+    @update:modelValue="updateYear"
+  />
 </template>

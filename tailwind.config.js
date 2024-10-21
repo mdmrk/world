@@ -20,9 +20,24 @@ export default {
         "population-mobile": "60px 1fr 60px 1fr 60px"
       },
       animation: {
-        shake: "shake 5s ease infinite"
+        shake: "shake 5s ease infinite",
+        "slide-fade": "slide-fade 1s"
+      },
+      transitionProperty: {
+        "slide-fade": "all"
+      },
+      transitionTimingFunction: {
+        "slide-fade-in": "ease-out",
+        "slide-fade-out": "ease-out"
+      },
+      transitionDuration: {
+        "slide-fade-in": "300ms",
+        "slide-fade-out": "300ms"
       },
       keyframes: {
+        "slide-fade": {
+          "from, to": { transform: "translateY(-20px)", opacity: "0" }
+        },
         shake: {
           "0%": { transform: "rotate(-12deg)" },
           "8%": { transform: "rotate(12deg)" },
