@@ -34,6 +34,10 @@ const yearByAgeGroupPopulation = computed(() => {
   if (!props.activeCountryCode || !props.populationData[props.activeCountryCode]) return []
   return props.populationData[props.activeCountryCode][yearIndex.value]
 })
+
+const dataIsEmpty = computed(() => {
+  return props.activeCountryCode && props.populationData[props.activeCountryCode].length === 1
+})
 </script>
 <template>
   <div
@@ -46,7 +50,8 @@ const yearByAgeGroupPopulation = computed(() => {
     ></div>
     <div class="text-center z-10 py-2">
       <div class="text-2xl">{{ CountryList[activeCountryCode] }} ({{ year }})</div>
-      <div class="text-3xl z-10">
+      <div v-if="dataIsEmpty" class="text-3xl z-10">---</div>
+      <div v-else class="text-3xl z-10">
         {{ yearTotalPopulation }}
       </div>
     </div>
@@ -59,7 +64,18 @@ const yearByAgeGroupPopulation = computed(() => {
       <div>&nbsp;</div>
       <div class="text-right">Females</div>
     </div>
-    <div class="overflow-y-auto flex-grow">
+    <div v-if="dataIsEmpty" class="overflow-y-auto flex-grow">
+      <div
+        class="grid grid-cols-population-mobile h-14 md:grid-cols-population items-center z-10 w-full text-sm md:text-lg overflow-y-hidden"
+      >
+        <div class="text-left"></div>
+        <div></div>
+        <div class="text-center text-lg italic">No data</div>
+        <div></div>
+        <div class="text-right"></div>
+      </div>
+    </div>
+    <div v-else class="overflow-y-auto flex-grow">
       <div
         class="grid grid-cols-population-mobile md:grid-cols-population items-center z-10 w-full text-sm md:text-lg overflow-y-hidden"
         v-for="(ageGroup, index) in yearByAgeGroupPopulation"

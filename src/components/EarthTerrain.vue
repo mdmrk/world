@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { initialCameraLookAt, initialCameraPosition } from "@/consts"
-import type { CountryCode } from "@/types"
+import { type CountryCode, ColorList } from "@/types"
 import type CameraControls from "camera-controls"
 import * as THREE from "three"
 import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader"
@@ -20,8 +20,8 @@ const world = shallowRef<THREE.Object3D>()
 const raycaster = new THREE.Raycaster()
 const mouse = new THREE.Vector2()
 const countryMaterials = new Map<CountryCode, THREE.Material>()
-const colors = ["#009688", "#8bc34a", "#ffc107", "#ff9800", "#f94144", "#b18bda"].map(
-  (color) => new THREE.Color(color)
+const materials = ["#ffe017", "#ff0040", "#ff9500", "#00ff15", "#12ffd1"].map(
+  (color) => new THREE.MeshPhongMaterial({ color: new THREE.Color(color), shininess: 0 })
 )
 
 let startInteraction = {
@@ -30,11 +30,8 @@ let startInteraction = {
 }
 
 function createCountryMaterial(countryCode: CountryCode) {
-  const color = colors[Math.floor(Math.random() * colors.length)]
-  const material = new THREE.MeshPhongMaterial({
-    color: color,
-    shininess: 0
-  })
+  const colorIndex = ColorList[countryCode]
+  const material = materials[colorIndex].clone()
   countryMaterials.set(countryCode, material)
   return material
 }
@@ -139,12 +136,30 @@ async function loadModel() {
 }
 
 function setupLighting() {
+  const existingLights = props.scene.children.filter((child) => child instanceof THREE.Light)
+  existingLights.forEach((light) => props.scene.remove(light))
+
+  const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 1.0)
+  props.scene.add(hemisphereLight)
+
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.8)
   props.scene.add(ambientLight)
 
-  const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8)
-  directionalLight.position.set(5, 5, 5)
-  props.scene.add(directionalLight)
+  const mainLight = new THREE.DirectionalLight(0xffffff, 1.0)
+  mainLight.position.set(5, 5, 5)
+  props.scene.add(mainLight)
+
+  const fillLight = new THREE.DirectionalLight(0xffffff, 0.8)
+  fillLight.position.set(-5, -2, -5)
+  props.scene.add(fillLight)
+
+  const frontLight = new THREE.PointLight(0xffffff, 0.5)
+  frontLight.position.set(0, 0, 10)
+  props.scene.add(frontLight)
+
+  const backLight = new THREE.PointLight(0xffffff, 0.5)
+  backLight.position.set(0, 0, -10)
+  props.scene.add(backLight)
 }
 
 function onWindowResize() {
@@ -187,7 +202,7 @@ function handleInteractionEnd(event: MouseEvent | TouchEvent) {
 
     if (intersects.length > 0 && intersects[0].object instanceof THREE.Mesh) {
       const countryCode = intersects[0].object.name as CountryCode
-      if (["Ocean", "AQ"].indexOf(countryCode) === -1) {
+      if (["Ocean"].indexOf(countryCode) === -1) {
         emit("setActiveCountryCode", countryCode)
         zoomToCountry(intersects[0].object)
       } else {

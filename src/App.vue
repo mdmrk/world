@@ -11,7 +11,7 @@ function setActiveCountryCode(countryCode: CountryCode | undefined) {
 </script>
 
 <template>
-  <main class="min-h-svh">
+  <main>
     <MainScene @set-active-country-code="setActiveCountryCode" />
     <UIHandler :active-country-code="activeCountryCode" />
   </main>
