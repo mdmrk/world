@@ -191,7 +191,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="w-full h-full" ref="container">
+  <div class="w-svh h-svh overflow-hidden" ref="container">
     <Stars :scene="scene" />
     <EarthTerrain
       @set-active-country-code="setActiveCountryCode"
